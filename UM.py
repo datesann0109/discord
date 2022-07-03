@@ -97,7 +97,7 @@ async def on_message(message):
 
             # ログ用のチャンネルに変更履歴を送信する
             log_channel = client.get_channel(LOG_CHANNEL_ID)
-            await log_channel.send(f"{member}がチャンネル'{create_channel}'を作成しました.\n参加するには/join {create_channel}")
+            await log_channel.send(f"{member}がチャンネル'{create_channel}'を作成しました.\n参加するには /join {create_channel}")
 
         else:
             await member.send(f"{create_channel}はすでに存在するか,作成できません.")
