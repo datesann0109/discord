@@ -10,7 +10,7 @@ with open('./setting.yaml') as f:  # 設定ファイルの読み込み
 
 BOT_TOKEN = setting['BOT_TOKEN']  # BOTのトークン
 CHANNEL_ID = setting['CHANNEL_ID']  # BOTが動作するチャンネルのID
-
+CATEGORY_ID = setting['CATEGORY_ID']  # テキストチャネルを作成するカテゴリ
 
 client = discord.Client()
 
@@ -84,7 +84,8 @@ async def on_message(message):
         member = message.author
         if create_channel not in [channel.name for channel in message.guild.text_channels]:
             # プライベートチャンネルを作成し、作成者だけ閲覧できるように
-            new_channel = await message.guild.create_text_channel(name=create_channel)
+            category = message.guild.get_channel(CATEGORY_ID)
+            new_channel = await category.create_text_channel(name=create_channel)
             await new_channel.set_permissions(message.guild.default_role, read_messages=False)
             await new_channel.set_permissions(member, read_messages=True)
 
