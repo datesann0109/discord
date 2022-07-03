@@ -24,17 +24,17 @@ async def on_ready():
     # main_channelの内容をすべて消す
     await main_channel.purge()
     # 送信するメッセージの作成
-    message = "-------チャンネル一覧-------\n"
-    for channel in main_channel.guild.text_channels:
-        if channel.name not in VOID_CHANNELS:
-            message += f"{channel.name}\n"
-
     # 操作説明
-    message += """
+    message = """
 -------コマンド-------
 チャンネルに参加\t/join チャンネル名
 チャンネルの作成\t/create チャンネル名
-    """
+\n"""
+
+    message += "-------チャンネル一覧-------\n"
+    for channel in main_channel.guild.text_channels:
+        if channel.name not in VOID_CHANNELS:
+            message += f"{channel.name}\n"
 
     # messageをdiscordに表示
     await main_channel.send(message)
@@ -43,7 +43,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # 指定したチャネル以外では動作しないように
+    # 指定したチャンネル以外では動作しないように
     if message.channel.id != CHANNEL_ID:
         return
 
@@ -74,6 +74,27 @@ async def on_message(message):
             # VOID_CHANNELSに登録したチャンネルに参加しようとした時
             await member.send(f"{search_channel}チャンネルへの参加に失敗しました.")
             print(f"{member}が権限のない{search_channel}へ参加しようとしました.")
+
+    # チャンネルへの参加処理
+    order = '/create'
+    order += ' '  # コマンドの後ろにスペースが必ず入っているように
+    if order == str(message.content)[:len(order)]:
+        # 作成したいチャンネル名を取得
+        create_channel = message.content[len(order):]
+        member = message.author
+        if create_channel not in [channel.name for channel in message.guild.text_channels]:
+            # プライベートチャンネルを作成し、作成者だけ閲覧できるように
+            new_channel = await message.guild.create_text_channel(name=create_channel)
+            await new_channel.set_permissions(message.guild.default_role, read_messages=False)
+            await new_channel.set_permissions(member, read_messages=True)
+
+            # 新しく作成されたチャンネルを登録
+            main_channel = client.get_channel(CHANNEL_ID)
+            await main_channel.send(f'{new_channel} (NEW)')
+            print(f"{member}が{create_channel}を作成しました.")
+        else:
+            await member.send(f"{create_channel}はすでに存在するか,作成できません.")
+            print(f"{member}が{create_channel}を作成しようとし,失敗しました.")
 
     await message.delete()
 
