@@ -52,7 +52,8 @@ async def on_message(message):
         return
 
     # チャンネルへの参加処理
-    order = '/join '
+    order = '/join'
+    order += ' '  # コマンドの後ろにスペースが必ず入っているように
     if order == str(message.content)[:len(order)]:
         # 参加したいチャンネル名を取得
         search_channel = message.content[len(order):]
