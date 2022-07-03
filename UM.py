@@ -11,6 +11,7 @@ with open('./setting.yaml') as f:  # 設定ファイルの読み込み
 BOT_TOKEN = setting['BOT_TOKEN']  # BOTのトークン
 CHANNEL_ID = setting['CHANNEL_ID']  # BOTが動作するチャンネルのID
 CATEGORY_ID = setting['CATEGORY_ID']  # テキストチャネルを作成するカテゴリ
+LOG_CHANNEL_ID = setting['LOG_CHANNEL_ID']  # 変更履歴を流すチャンネル
 
 client = discord.Client()
 
@@ -93,6 +94,11 @@ async def on_message(message):
             main_channel = client.get_channel(CHANNEL_ID)
             await main_channel.send(f'{new_channel} (NEW)')
             print(f"{member}が{create_channel}を作成しました.")
+
+            # ログ用のチャンネルに変更履歴を送信する
+            log_channel = client.get_channel(LOG_CHANNEL_ID)
+            await log_channel.send(f"{member}がチャンネル'{create_channel}'を作成しました.\n参加するには/join {create_channel}")
+
         else:
             await member.send(f"{create_channel}はすでに存在するか,作成できません.")
             print(f"{member}が{create_channel}を作成しようとし,失敗しました.")
