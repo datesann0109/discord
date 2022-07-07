@@ -82,6 +82,7 @@ async def on_message(message):
     if order == str(message.content)[:len(order)]:
         # 作成したいチャンネル名を取得
         create_channel = message.content[len(order):]
+        create_channel = str(create_channel).strip().replace(' ', '-')
         member = message.author
         if create_channel not in [channel.name for channel in message.guild.text_channels]:
             # プライベートチャンネルを作成し、作成者だけ閲覧できるように
