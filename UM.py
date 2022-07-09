@@ -15,30 +15,38 @@ LOG_CHANNEL_ID = setting['LOG_CHANNEL_ID']  # 変更履歴を流すチャンネ�
 
 client = discord.Client()
 
+FIRST_FLAG = True
 
 # discordのBOTが正常に起動した時
+
+
 @client.event
 async def on_ready():
-    print('Bot Start!')
-    # チャンネル指定
-    main_channel = client.get_channel(CHANNEL_ID)
-    # main_channelの内容をすべて消す
-    await main_channel.purge()
-    # 送信するメッセージの作成
-    # 操作説明
-    message = """
+    global FIRST_FLAG
+    if FIRST_FLAG:
+        print('bot start!')
+        # チャンネル指定
+        main_channel = client.get_channel(CHANNEL_ID)
+        # main_channelの内容をすべて消す
+        await main_channel.purge()
+        # 送信するメッセージの作成
+        # 操作説明
+        message = """
 -------コマンド-------
 チャンネルに参加\t/join チャンネル名
 チャンネルの作成\t/create チャンネル名
 \n"""
 
-    message += "-------チャンネル一覧-------\n"
-    for channel in main_channel.guild.text_channels:
-        if channel.name not in VOID_CHANNELS:
-            message += f"{channel.name}\n"
+        message += "-------チャンネル一覧-------\n"
+        for channel in main_channel.guild.text_channels:
+            if channel.name not in VOID_CHANNELS:
+                message += f"{channel.name}\n"
 
-    # messageをdiscordに表示
-    await main_channel.send(message)
+        # messageをdiscordに表示
+        await main_channel.send(message)
+        FIRST_FLAG = False
+    else:
+        print('bot restart!')
     print('waiting for command')
 
 
